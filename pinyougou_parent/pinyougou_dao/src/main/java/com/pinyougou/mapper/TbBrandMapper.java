@@ -40,5 +40,5 @@ public interface TbBrandMapper {
      * @param brand
      * @return
      */
-    List<TbBrand> findByBrand(TbBrand brand);
+    List<TbBrand>  findByBrand(TbBrand brand);
 }
