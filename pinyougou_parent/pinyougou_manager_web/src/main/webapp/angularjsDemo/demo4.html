@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>事件的指令</title>
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script>
+        //定义模块: 参数一:模块名   参数二:依赖的其他模块  没有也要声明空数组
+        var app = angular.module("myapp",[]);
+        //定义控制器   参数一:控制器名称  参数二:控制器要做的事情
+        //$scope angularjs内置对象  全局作用域  作用:html和js交互的桥梁
+        app.controller("myctrl",function ($scope) {
+           //定义相加的方法
+            $scope.add=function () {
+                $scope.z = parseInt($scope.x)+parseInt($scope.y);
+            }
+        })
+    </script>
+</head>
+<!--ng-app声明模块的范围，作用：angularjs的作用范围-->
+<body >
+    <!--ng-controller声明控制器-->
+    <div ng-app="myapp" ng-controller="myctrl" >
+        X:<input type="text" ng-model="x"><br>
+        Y:<input type="text" ng-model="y"><br>
+        <!--定义一个button-->
+        <button ng-click="add()">相加</button>相加后的结果:{{z}}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>内置服务</title>
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script>
+        //定义模块: 参数一:模块名   参数二:依赖的其他模块  没有也要声明空数组
+        var app = angular.module("myapp",[]);
+        //定义控制器   参数一:控制器名称  参数二:控制器要做的事情
+        //$scope angularjs内置对象  全局作用域  作用:html和js交互的桥梁
+        //$http  angularjs发起请求的内置对象  全部都是异步的ajax
+        app.controller("myctrl",function ($scope,$http) {
+            //response接收响应结果
+            $http.get("../brand/findAll.do").success(function (response) {
+                $scope.list=response;
+            });
+        });
+    </script>
+</head>
+<!--ng-app声明模块的范围，作用：angularjs的作用范围-->
+<body >
+    <!--ng-controller声明控制器-->
+    <div ng-app="myapp" ng-controller="myctrl" >
+       <table>
+           <tr>
+               <th>id</th>
+               <th>品牌</th>
+               <th>首字母</th>
+           </tr>
+           <!--ng-repeat循环遍历指令-->
+           <tr ng-repeat="brand in list">
+               <td>{{brand.id}}</td>
+               <td>{{brand.name}}</td>
+               <td>{{brand.firstChar}}</td>
+           </tr>
+       </table>
+    </div>
+
+</body>
+</html>
