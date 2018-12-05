@@ -27,3 +27,23 @@
         1.抽取公共的service层
         2.抽取公共的controller层
         3.基于base的基本抽取
+二.mybatis逆向工程生成
+三.规格的表的设计和完成
+    1.列表的展示+分页
+        分析:后台   传过来来三个参数   specification   pageNum   pageSize
+                    分页然后信息返回pageResult
+             前台:   负传递三个参数,然后循环展示
+    2.规格的添加的实现
+        后台:关联数组,我们创建一个组合实体类,用户保存我们的两个对象
+        前台:通过添加添加点击事件  获得保存
+        注意,我们分装的组合实体类一定要声明  //初始化entity对象
+                                $scope.entity={specificationOptions:[]}
+        删除选项格子时,我们通过一个内置对象获取当前index
+        ng-click="deleRow($index)"
+        注意:在添加时,我们先要获取tb_specification表的添加的id,然后返回id,我们通过设置tb_specificationOptions
+        的specificationOption.setSpecId(spe.getId());*******特别注意
+    3.修改的实现
+        两个功能: 1. 页面的回显问题  2.是修改的时候,我们需要把原来的删除后在,在添加我们前台提交过来的数据
+    4.删除
+        循环ids删除
+        注意点:   改变复选框的选中状态   ng-click="updateSelection($event,pojo.id)"
