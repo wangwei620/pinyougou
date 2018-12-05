@@ -16,103 +16,11 @@
 	<!--映入分页插件资源-->
 	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
 	<script src="../plugins/angularjs/pagination.js"></script>
-	<script>
-		//定义模块 参数一:模块名   参数二:依赖的其他模块  没有也要声明空数组
-		var app = angular.module("pinyougou",["pagination"]);
-		app.controller("brandController",function ($scope,$http) {
-			//定义查询所有品牌列表的方法
-			$scope.findAll=function () {
-				//response接受相应结果
-				$http.get("../brand/findAll.do").success(function (response) {
-					$scope.list = response;
-                })
-            }
-            //分页配置
-            $scope.paginationConf = {
-                currentPage:1,  				//当前页
-                totalItems:10,					//总记录数
-                itemsPerPage:10,				//每页记录数
-                perPageOptions:[10,20,30,40,50], //分页选项，下拉选择一页多少条记录
-                onChange:function(){			//页面变更后触发的方法
-                    $scope.reloadList();		//启动就会调用分页组件
-                }
-            };
-			//重新请求分页
-			/*$scope.reloadList=function () {
-                $scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
-            }*/
-            //条件查询
-            $scope.searchEntity={};//解决初始化参数为空的情况
-            $scope.reloadList=function () {
-                $http.post("../brand/search.do?pageNum="+$scope.paginationConf.currentPage+"&pageSize="+$scope.paginationConf.itemsPerPage,
-                    $scope.searchEntity).success(function (response) {
-                    $scope.list = response.rows;
-                    $scope.paginationConf.totalItems=response.total;
-                })
-            }
 
-            //发起分页查询请求
-            $scope.findPage=function (pageNum,pageSize) {
-                $http.get("../brand/findPage.do?pageNum="+pageNum+"&pageSize="+pageSize).success(function (response) {
-                    $scope.paginationConf.totalItems=response.total;
-                    $scope.list=response.rows;
-                })
-            }
-            //添加品牌
-			$scope.save=function () {
-			    var methodName = "";
-			    if($scope.entity.id!=null){
-			        //修改
-					methodName="updata.do";
-				}else{
-			        //添加
-					methodName="addBrand.do";
-				}
-				$http.post("../brand/"+methodName,$scope.entity).success(function (response) {
-					if(response.success){
-					    //添加成功
-						$scope.reloadList();
-					}else{
-						alert(response.message);
-					}
-                })
-            }
-            //根据id查询品牌数据
-			$scope.findOne=function (id) {
-				$http.get("../brand/findOne.do?id="+id).success(function (response) {
-					$scope.entity=response;
-                })
-            }
-            //定义记录选中的id的数组
-            $scope.selectIds=[];
-			//跟新复选框的状态
-            $scope.updateSelection=function ($event,id) {
-                //判断选中状态
-                if($event.target.checked){//选中状态
-                    $scope.selectIds.push(id);
-                }else{
-                    //取消勾选,移除当前的id,//参数一:移除位置元素的索引值,参数二:从该位置移除几个元素
-                    var index = $scope.selectIds.indexOf(id);
-                    $scope.selectIds.splice(index,1);
-                }
-            }
-            //删除操作
-            $scope.delete=function () {
-                if(confirm("您确定要删除吗")){
-                    $http.get("../brand/delete.do?ids="+$scope.selectIds).success(function (response) {
-                        if (response.success){
-                        //删除成功,从新加载列表
-                            $scope.reloadList();
-                     }else{
-                            alert(response.message);
-                        }
-                    })
-                }
-            }
-
-
-        })
-	</script>
+	<script type="text/javascript" src="../js/base_pagination.js"></script>
+	<script type="text/javascript" src="../js/service/brandService.js"></script>
+	<script type="text/javascript" src="../js/controller/baseController.js"></script>
+	<script type="text/javascript" src="../js/controller/brandController.js"></script>
 </head><!--ng-init="findAll()"初始化变量-->
 <body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="brandController">
   <!-- .box-body -->

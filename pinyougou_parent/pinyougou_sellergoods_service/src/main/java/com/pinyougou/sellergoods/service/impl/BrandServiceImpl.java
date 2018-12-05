@@ -22,15 +22,6 @@ public class BrandServiceImpl implements BrandService {
         return brandMapper.findAll();
     }
 
-    @Override
-    public PageResult findPage(Integer pageNum, Integer pageSize) {
-        //通过分页插件实现品牌的分页
-        PageHelper.startPage(pageNum,pageSize);
-        //page的父类是list集合
-        Page<TbBrand> page = (Page<TbBrand>) brandMapper.findAll();
-        //通过构造放啊传参
-        return new PageResult(page.getTotal(),page.getResult());
-    }
     //添加品牌
     @Override
     public void addBrand(TbBrand brand) {
@@ -47,7 +38,7 @@ public class BrandServiceImpl implements BrandService {
         brandMapper.updateBrand(brand);
     }
 
-
+    //删除
     @Override
     public void delete(Long[] ids) {
         //循环删除
@@ -55,7 +46,7 @@ public class BrandServiceImpl implements BrandService {
             brandMapper.delete(id);
         }
     }
-    //条件查询
+    //条件查询+分页实现
     @Override
     public PageResult findPageByNameAndChar(TbBrand brand, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum,pageSize);

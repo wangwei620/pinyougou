@@ -36,7 +36,7 @@ public interface TbBrandMapper {
     void delete(Long id);
 
     /**
-     * 条件查询
+     * 条件查询+实现
      * @param brand
      * @return
      */

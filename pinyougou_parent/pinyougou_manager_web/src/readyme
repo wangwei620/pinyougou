@@ -20,5 +20,10 @@
     删除的实现:
          前台:通过一个数组,把选中的添加到数组中,发送到后台
          后台:通过循环删除
-    分页实现: 后台:传过来一个
-                    定义一个queryVo类
+    分页实现: 后台:传过来一个三个参数 tbBrand   pageNum   pageSize
+                                day03pinyougou
+一、前端代码的高度抽取
+    分层开发
+        1.抽取公共的service层
+        2.抽取公共的controller层
+        3.基于base的基本抽取

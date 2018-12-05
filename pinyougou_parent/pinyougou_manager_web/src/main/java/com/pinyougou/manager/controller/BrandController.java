@@ -17,19 +17,14 @@ public class BrandController {
 
     @Reference
     private BrandService brandService;
-
+    //查询所有
     @RequestMapping("findAll")
     public List<TbBrand> findAll(){
 
         return brandService.findAll();
     }
-    /**
-     * 品牌的分页数据查询
-     */
-   /* @RequestMapping("/findPage")
-    public PageResult findPage(Integer pageNum, Integer pageSize){
-        return  brandService.findPage(pageNum,pageSize);
-    }*/
+
+   //条件查询+分页实现
     @RequestMapping("/search")
     public PageResult findPageByNameAndChar(@RequestBody TbBrand brand,Integer pageNum, Integer pageSize){
         return brandService.findPageByNameAndChar(brand,pageNum,pageSize);
@@ -37,7 +32,7 @@ public class BrandController {
     /**
      * 添加
      */
-    @RequestMapping("/addBrand")
+    @RequestMapping("/add")
     public Result addBrand(@RequestBody TbBrand brand){
         try {
             brandService.addBrand(brand);
@@ -57,7 +52,7 @@ public class BrandController {
     /**
      * 修改brand
      */
-    @RequestMapping("/updata")
+    @RequestMapping("/update")
     public Result updateBrand(@RequestBody TbBrand brand){
         try {
             brandService.updateBrand(brand);
@@ -80,8 +75,4 @@ public class BrandController {
             return new Result(false,"删除成功");
         }
     }
-    /*@RequestMapping("/search")
-    public PageResult findPageByNameAndChar(@RequestBody TbBrand brand,int pageNum,int pageSize){
-        return brandService.findPageByNameAndChar(brand,pageNum,pageSize);
-    }*/
 }
