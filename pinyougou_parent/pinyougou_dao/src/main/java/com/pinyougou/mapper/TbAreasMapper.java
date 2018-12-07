@@ -11,7 +11,7 @@ public interface TbAreasMapper {
 
     int deleteByExample(TbAreasExample example);
 
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(String id);
 
     int insert(TbAreas record);
 
@@ -19,7 +19,7 @@ public interface TbAreasMapper {
 
     List<TbAreas> selectByExample(TbAreasExample example);
 
-    TbAreas selectByPrimaryKey(Integer id);
+    TbAreas selectByPrimaryKey(String id);
 
     int updateByExampleSelective(@Param("record") TbAreas record, @Param("example") TbAreasExample example);
 
