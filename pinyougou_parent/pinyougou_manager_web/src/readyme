@@ -95,3 +95,29 @@
             		);
             	}
     5.删除功能的实现
+      添加一个删除按钮,传入事件ng-click="dele()"和复选框的点击事件   ng-click="updateSelection($event,pojo.id)"
+    6.显示页面的而优化,
+        实现方式:自定义一个方法,解析json格式的数据,根据key获取值
+        注意点:json对象根据属性名,获取值有两种方式,必须掌握**********************************
+        //解析json数据,然后根据属性名获取属性值做字符串的拼接操作
+            //jsonString 需要解析的字符串,  key :  json对象的属性名
+            $scope.jsonStringParse=function (jsonString,key) {
+                //定义一个变量为解析的字符串值
+                var value="";
+                var jsonArry = JSON.parse(jsonString);
+                for(var i= 0;i<jsonArry.length;i++){
+                    //注意json对象根据属性名,获取值有两种方式,
+                    //1.如果属性名是确定值,直接属性.属性名
+                    //2.如果属性名不确定是一个变量,需要 对象[属性名]
+                    if(i>0){
+                        value+=","+jsonArry[i][key];
+                    }else{
+                        value+=jsonArry[i][key];
+                    }
+                }
+                return value;
+    7.分类管理的实现
+          分析:三个层级关系   作用:方便商品查询 方便商品管理
+          实现方式,通过自关联的方式实现   非常重要  *******
+          关联关系:   三级分类与模板是   一对一的关系
+

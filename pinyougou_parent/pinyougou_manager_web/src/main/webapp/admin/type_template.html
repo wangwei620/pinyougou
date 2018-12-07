@@ -87,9 +87,9 @@
 			                              <td><input  type="checkbox" ng-click="updateSelection($event,pojo.id)"></td>
 				                          <td>{{pojo.id}}</td>
 									      <td>{{pojo.name}}</td>
-									      <td>{{pojo.specIds}}</td>
-									      <td>{{pojo.brandIds}}</td>
-									      <td>{{pojo.customAttributeItems}}</td>
+									      <td>{{jsonStringParse(pojo.brandIds,"text")}}</td>
+									      <td>{{jsonStringParse(pojo.specIds,"text")}}</td>
+									      <td>{{jsonStringParse(pojo.customAttributeItems,"text")}}</td>
 		                                  <td class="text-center">                                           
 		                                 	  <button type="button" ng-click="findOne(pojo.id)" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" >修改</button>
 		                                  </td>
