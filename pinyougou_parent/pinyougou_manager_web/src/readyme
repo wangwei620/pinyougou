@@ -75,3 +75,23 @@
     编写扩展属性:
         编写添加行
         删除行
+    5.修改功能的实现
+        添加点击事件
+        注意:返回的字符串,我们要转化为json对象显示
+            两种方法:  eval()     JSON.parse()这个非常重要
+            //查询实体
+            	$scope.findOne=function(id){
+            		typeTemplateService.findOne(id).success(
+            			function(response){
+            				$scope.entity= response;
+            				//解析字符串为json对象
+                            //品牌属性的转换
+                            $scope.entity.brandIds=JSON.parse(response.brandIds);
+                            //规格属性的转换
+                            $scope.entity.specIds=JSON.parse(response.specIds);
+                            //扩展属性
+                            $scope.entity.customAttributeItems=JSON.parse(response.customAttributeItems);
+            			}
+            		);
+            	}
+    5.删除功能的实现

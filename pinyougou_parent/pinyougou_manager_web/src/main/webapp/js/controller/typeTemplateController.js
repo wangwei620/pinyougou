@@ -26,7 +26,14 @@ app.controller('typeTemplateController' ,function($scope,$controller ,brandServi
 	$scope.findOne=function(id){				
 		typeTemplateService.findOne(id).success(
 			function(response){
-				$scope.entity= response;					
+				$scope.entity= response;
+				//解析字符串为json对象
+                //品牌属性的转换
+                $scope.entity.brandIds=JSON.parse(response.brandIds);
+                //规格属性的转换
+                $scope.entity.specIds=JSON.parse(response.specIds);
+                //扩展属性
+                $scope.entity.customAttributeItems=JSON.parse(response.customAttributeItems);
 			}
 		);				
 	}
@@ -53,15 +60,17 @@ app.controller('typeTemplateController' ,function($scope,$controller ,brandServi
 	
 	 
 	//批量删除 
-	$scope.dele=function(){			
-		//获取选中的复选框			
+	$scope.dele=function(){
+	    if(confirm("您确定要删除吗")){
+		//获取选中的复选框
 		typeTemplateService.dele( $scope.selectIds ).success(
 			function(response){
 				if(response.success){
 					$scope.reloadList();//刷新列表
-				}						
-			}		
-		);				
+				}
+			}
+		);
+        }
 	}
 	
 	$scope.searchEntity={};//定义搜索对象 
