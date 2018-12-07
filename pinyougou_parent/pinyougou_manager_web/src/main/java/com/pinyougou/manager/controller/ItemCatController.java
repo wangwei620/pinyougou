@@ -3,6 +3,8 @@ package com.pinyougou.manager.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.entity.PageResult;
 import com.pinyougou.pojo.Result;
+import com.pinyougou.pojo.TbCities;
+import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.sellergoods.service.ItemCatService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -109,6 +111,12 @@ public class ItemCatController {
 	@RequestMapping("/search")
 	public PageResult search(@RequestBody TbItemCat itemCat, int page, int rows  ){
 		return itemCatService.findPage(itemCat, page, rows);		
+	}
+
+	//通过父id查询分类信息
+	@RequestMapping("/findByParentId")
+	public List<TbItemCat> findByParentId(Long parentId){
+		return itemCatService.findByParentId(parentId);
 	}
 	
 }

@@ -120,4 +120,20 @@
           分析:三个层级关系   作用:方便商品查询 方便商品管理
           实现方式,通过自关联的方式实现   非常重要  *******
           关联关系:   三级分类与模板是   一对一的关系
-
+        后台代码实现:通过findByParentId(Long parentId)  返回list数据
+        前台:通过自己定义一个方法实现
+        controller层
+        // 根据父id找子类
+            $scope.findByParentId=function(parentId){
+                itemCatService.findByParentId(parentId).success(
+                    function(response){
+                        $scope.entity= response;
+                    }
+                );
+            }
+        service层
+        //根据父id查找自分类
+            this.findByParentId=function(parentId){
+                return $http.get('../itemCat/findByParentId.do?parentId='+parentId);
+            }
+        查询下一级按钮,我们传入当前的父id值
