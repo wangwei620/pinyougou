@@ -29,4 +29,9 @@ app.service("specificationService",function ($http) {
         return $http.post("../specification/update.do",entity);
     }
 
+    //查询模板关联   规格下拉列表
+    this.selectSpecList=function () {
+        return $http.get("../specification/selectSpecList.do");
+    }
+
 })

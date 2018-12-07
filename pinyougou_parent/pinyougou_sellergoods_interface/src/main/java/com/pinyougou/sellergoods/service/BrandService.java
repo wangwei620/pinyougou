@@ -4,6 +4,7 @@ import com.pinyougou.entity.PageResult;
 import com.pinyougou.pojo.TbBrand;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BrandService {
 
@@ -19,4 +20,6 @@ public interface BrandService {
     void delete(Long[] ids);
     //条件查询+分页实现
     PageResult findPageByNameAndChar(TbBrand brand, int pageNum, int pageSize);
+    //模板关联查询  品牌表的所有数据
+    List<Map> selectBrandList();
 }

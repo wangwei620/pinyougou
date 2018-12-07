@@ -178,4 +178,8 @@
       first_char = #{firstChar,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <!--模板关联  查询所有品牌的额信息-->
+  <select id="selectBrandList" resultType="java.util.Map">
+    select id,name text from tb_brand
+  </select>
 </mapper>

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/brand")
 @RestController//这个注解是Controller和ResponseBody的结合
@@ -74,5 +75,12 @@ public class BrandController {
             e.printStackTrace();
             return new Result(false,"删除成功");
         }
+    }
+    /**
+     * 模板关联查询  品牌表的所有数据
+     */
+    @RequestMapping("/selectBrandList")
+    public List<Map> selectBrandList(){
+        return brandService.selectBrandList();
     }
 }

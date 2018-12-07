@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RequestMapping("/specification")
 @RestController//这个注解是Controller和ResponseBody的结合
 public class SpecificationController {
@@ -67,5 +70,11 @@ public class SpecificationController {
             e.printStackTrace();
             return new Result(false,"删除成功");
         }
+    }
+
+    //模板关联查询  规格表的数据
+    @RequestMapping("/selectSpecList")
+    public List<Map> selectSpecList(){
+        return specificationService.selectSpecList();
     }
 }
