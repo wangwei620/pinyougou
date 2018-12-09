@@ -74,9 +74,20 @@ public class ItemCatServiceImpl implements ItemCatService {
 	 */
 	@Override
 	public void delete(Long[] ids) {
+		//通过判断 id是否有下一级,如果有则不能删除,抛出异常
 		for(Long id:ids){
+			TbItemCatExample example = new TbItemCatExample();
+			Criteria criteria = example.createCriteria();
+			criteria.andParentIdEqualTo(id);
+			//查询所有为父id的数据
+			List<TbItemCat> tbItemCats = itemCatMapper.selectByExample(example);
+			//如果大于一则不能删除,有下一级数据
+			if(tbItemCats.size()>1){
+				throw new RuntimeException("存在下一级数据不能删除");
+			}else{
 			itemCatMapper.deleteByPrimaryKey(id);
-		}		
+			}
+		}
 	}
 	
 	

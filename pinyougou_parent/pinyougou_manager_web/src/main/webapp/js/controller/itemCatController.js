@@ -1,5 +1,5 @@
  //控制层 
-app.controller('itemCatController' ,function($scope,$controller   ,itemCatService){	
+app.controller('itemCatController' ,function($scope,$controller   ,itemCatService,typeTemplateService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -37,13 +37,15 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 		if($scope.entity.id!=null){//如果有ID
 			serviceObject=itemCatService.update( $scope.entity ); //修改  
 		}else{
+			//新增分类是;指定该跟类的父id
+			$scope.entity.parentId=$scope.parentId;
 			serviceObject=itemCatService.add( $scope.entity  );//增加 
 		}				
 		serviceObject.success(
 			function(response){
 				if(response.success){
 					//重新查询 
-		        	$scope.reloadList();//重新加载
+		        	$scope.findByParentId($scope.parentId);//重新加载
 				}else{
 					alert(response.message);
 				}
@@ -75,13 +77,50 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 			}			
 		);
 	}
+	//记录当前分类的父id
+	$scope.parentId=0;
 	// 根据父id找子类
     $scope.findByParentId=function(parentId){
+    	//为父id赋值
+		$scope.parentId=parentId;
         itemCatService.findByParentId(parentId).success(
             function(response){
                 $scope.list= response;
             }
         );
     }
-    
+    //定义级别  注意我们面包屑的存储数据结构是{id:"name"} key:value的形式
+	//首先定义一个grade=1
+	$scope.grade=1;
+	//对级别进行 赋值    通过传过来的grade值
+	$scope.setGrade=function (grade) {
+		$scope.grade=grade;
+    }
+    //对面包屑导航栏的级别和grade有关
+	//entity_p  为父分类的对象
+	$scope.selectCatList=function (entity_p) {
+		//如果是一级分类
+		if ($scope.grade==1){
+			$scope.entity_1=null;
+			$scope.entity_2=null;
+		}
+        //如果是二级分类
+        if ($scope.grade==2){
+            $scope.entity_1=entity_p;
+            $scope.entity_2=null;
+        }
+        //如果是一级分类
+        if ($scope.grade==3){
+            $scope.entity_2=entity_p;
+        }
+        //调用父id查询子分类
+        $scope.findByParentId(entity_p.id);
+    }
+
+    //查找分类模板的关联的模板数据
+	$scope.findTemplateList=function () {
+		typeTemplateService.findAll().success(function (response) {
+			$scope.templateList=response;
+        })
+    }
 });	
