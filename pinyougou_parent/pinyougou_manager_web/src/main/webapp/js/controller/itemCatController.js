@@ -55,15 +55,18 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 	
 	 
 	//批量删除 
-	$scope.dele=function(){			
-		//获取选中的复选框			
-		itemCatService.dele( $scope.selectIds ).success(
-			function(response){
-				if(response.success){
-					$scope.reloadList();//刷新列表
-				}						
-			}		
-		);				
+	$scope.dele=function(){
+	    if(confirm("确定要删除吗?")){
+            //获取选中的复选框
+            itemCatService.dele( $scope.selectIds ).success(
+                function(response){
+                    if(response.success){
+                        $scope.findByParentId($scope.parentId);//刷新列表
+                    }
+                }
+            );
+        }
+
 	}
 	
 	$scope.searchEntity={};//定义搜索对象 

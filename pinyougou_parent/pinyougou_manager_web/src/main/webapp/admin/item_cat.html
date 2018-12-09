@@ -77,7 +77,7 @@
 			                      </thead>
 			                      <tbody>
 			                          <tr  ng-repeat="pojo in list">
-			                              <td><input  type="checkbox" ></td>
+			                              <td><input  type="checkbox" ng-click="updateSelection($event,pojo.id)" ></td>
 				                          <td>{{pojo.id}}</td>
 									      <td>{{pojo.name}}</td>
 									      <td>
