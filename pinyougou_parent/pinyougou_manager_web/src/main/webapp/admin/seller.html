@@ -14,10 +14,20 @@
     <link rel="stylesheet" href="../css/style.css">
 	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
-    
+
+	<!--引入angularjs-->
+	<script src="../plugins/angularjs/angular.min.js"></script>
+	<!--映入分页插件资源-->
+	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
+	<script src="../plugins/angularjs/pagination.js"></script>
+
+	<script type="text/javascript" src="../js/base_pagination.js"></script>
+	<script type="text/javascript" src="../js/service/sellerService.js"></script>
+	<script type="text/javascript" src="../js/controller/baseController.js"></script>
+	<script type="text/javascript" src="../js/controller/sellerController.js"></script>
 </head>
 
-<body class="hold-transition skin-red sidebar-mini"  >
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="sellerController" >
   <!-- .box-body -->
                 <div class="box box-primary">
                     <div class="box-header with-border">
@@ -33,15 +43,15 @@
                             
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-							        公司名称：<input  >
-									店铺名称： <input  >
+							        公司名称：<input ng-model="searchEntity.name" >
+									店铺名称： <input na-model="searchEntity.nickName" >
 									状态：
 									<input type="radio" value="" />全部
 									<input type="radio" value="0" />待审核
 									<input type="radio" value="1" />已审核
 									<input type="radio" value="2" />审核未通过
 									<input type="radio" value="3" />关闭
-									<button class="btn btn-default" >查询</button>                                    
+									<button class="btn btn-default" ng-click="reloadList()" >查询</button>
                                 </div>
                             </div>
                             <!--工具栏/-->
@@ -63,32 +73,18 @@
 			                          </tr>
 			                      </thead>
 			                      <tbody>
-			                          <tr>
+			                          <tr ng-repeat="pojo in list" >
 			                              <td><input  type="checkbox"></td>			                              
-				                          <td>1</td>
-									      <td>梦琪琪商贸有限公司</td>
-									      <td>梦琪琪</td>
-									      <td>李梦琪</td>
-									      <td>13402312232</td>
+				                          <td>{{pojo.sellerId}}</td>
+									      <td>{{pojo.name}}</td>
+									      <td>{{pojo.nickName}}</td>
+									      <td>{{pojo.linkmanName}}</td>
+									      <td>{{pojo.telephone}}</td>
 		                                  <td>
-			                                  <span>未审核</span>	
-										     
-		                                  </td>
-		                                  <td class="text-center">                                           
-		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#sellerModal" >详情</button>                                           
-		                                  </td>
-			                          </tr>
-									  <tr>
-			                              <td><input  type="checkbox"></td>			                              
-				                          <td>2</td>
-									      <td>黑瞎子苹果专卖店</td>
-									      <td>黑瞎子</td>
-									      <td>孙大鹏</td>
-									      <td>13622244111</td>
-		                                  <td>
-			                                  
-										      <span>审核通过</span>	
-										      
+			                                  <!--<span>{{pojo.status}}</span>-->
+											  <span ng-if="pojo.status==0">待审核</span>
+											  <span ng-if="pojo.status==1">已审核</span>
+											  <span ng-if="pojo.status==3">审核未通过</span>
 		                                  </td>
 		                                  <td class="text-center">                                           
 		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#sellerModal" >详情</button>                                           
@@ -96,8 +92,9 @@
 			                          </tr>
 			                      </tbody>
 			                  </table>
-			                  <!--数据列表/-->                        
-							  
+			                  <!--数据列表/-->
+							<!--分页工具条展示-->
+							<tm-pagination conf="paginationConf"></tm-pagination>
 							 
                         </div>
                         <!-- 数据表格 /-->

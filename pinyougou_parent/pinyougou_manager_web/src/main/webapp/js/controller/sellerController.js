@@ -75,5 +75,18 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			}			
 		);
 	}
+	//根据id跟新状态值
+    $scope.updateStatus=function(status){
+        //通过详情的实体类,获得id,因为实体类中已经存在了,
+        sellerService.updateStatus( $scope.entity.sellerId,status ).success(
+            function(response){
+                if(response.success){
+                    $scope.reloadList();//刷新列表
+                }else{
+                	alert(response.message);
+				}
+            }
+        );
+    }
     
 });	

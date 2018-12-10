@@ -11,6 +11,7 @@ import com.pinyougou.pojo.TbSellerExample.Criteria;
 import com.pinyougou.sellergoods.service.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +48,9 @@ public class SellerServiceImpl implements SellerService {
 	 */
 	@Override
 	public void add(TbSeller seller) {
+		//注意:在这我们设置初次入驻的状态为 0,和时间
+		seller.setStatus("0");
+		seller.setCreateTime(new Date());
 		sellerMapper.insert(seller);		
 	}
 
@@ -160,5 +164,15 @@ public class SellerServiceImpl implements SellerService {
 		Page<TbSeller> page= (Page<TbSeller>)sellerMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+	//通过商家id跟新商家的状态
+	@Override
+	public void updateStatus(String sellerId, String status) {
+		//通过id查找该商家的实体类
+		TbSeller tbSeller = sellerMapper.selectByPrimaryKey(sellerId);
+		//设置状态
+		tbSeller.setStatus(status);
+		//跟新商家的状态
+		sellerMapper.updateByPrimaryKey(tbSeller);
+	}
+
 }

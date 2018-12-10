@@ -79,15 +79,15 @@ public class ItemCatServiceImpl implements ItemCatService {
 		for(Long id:ids){
 			//查询出分类表的一条数据
 			TbItemCat tbItemCat = itemCatMapper.selectByPrimaryKey(id);
-			//获取父id
-			Long parentId = tbItemCat.getParentId();
+
 			TbItemCatExample example = new TbItemCatExample();
 			Criteria criteria = example.createCriteria();
-			criteria.andParentIdEqualTo(parentId);
+			//当前id作为他的父id
+			criteria.andParentIdEqualTo(id);
 			//查询所有为父id的数据
 			List<TbItemCat> tbItemCats = itemCatMapper.selectByExample(example);
-			//如果大于一则不能删除,有下一级数据
-			if(tbItemCats.size()>1){
+			//如果大于一并且parentId不能为空则不能删除,有下一级数据
+			if(tbItemCats.size()>0){
 				throw new RuntimeException("存在下一级数据不能删除");
 			}else{
 				itemCatMapper.deleteByPrimaryKey(id);

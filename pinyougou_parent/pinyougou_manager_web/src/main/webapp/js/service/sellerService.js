@@ -28,5 +28,10 @@ app.service('sellerService',function($http){
 	//搜索
 	this.search=function(page,rows,searchEntity){
 		return $http.post('../seller/search.do?page='+page+"&rows="+rows, searchEntity);
-	}    	
+	}
+	//通过用户id跟新状态
+    //根据id修改商家status
+    this.updateStatus=function(sellerId,status){
+        return $http.get('../seller/updateStatus.do?sellerId='+sellerId+"&status="+status);
+    }
 });
