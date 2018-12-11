@@ -85,6 +85,15 @@
             <artifactId>pinyougou_sellergoods_interface</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--导入安全框架jar包-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
 
     </dependencies>
 
