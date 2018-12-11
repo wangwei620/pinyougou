@@ -4,12 +4,16 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.pinyougou.entity.PageResult;
+import com.pinyougou.groupentity.Goods;
+import com.pinyougou.mapper.TbGoodsDescMapper;
 import com.pinyougou.mapper.TbGoodsMapper;
 import com.pinyougou.pojo.TbGoods;
+import com.pinyougou.pojo.TbGoodsDesc;
 import com.pinyougou.pojo.TbGoodsExample;
 import com.pinyougou.pojo.TbGoodsExample.Criteria;
 import com.pinyougou.sellergoods.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,10 +23,13 @@ import java.util.List;
  *
  */
 @Service
+@Transactional
 public class GoodsServiceImpl implements GoodsService {
 
 	@Autowired
 	private TbGoodsMapper goodsMapper;
+	@Autowired
+	private TbGoodsDescMapper goodsDescMapper;
 	
 	/**
 	 * 查询全部
@@ -46,8 +53,17 @@ public class GoodsServiceImpl implements GoodsService {
 	 * 增加
 	 */
 	@Override
-	public void add(TbGoods goods) {
-		goodsMapper.insert(goods);		
+	public void add(Goods goods) {
+		//获取goods表,我们在插入的时候获取插入时的id，因为这个表关联goodsDesc
+		TbGoods tbGoods = goods.getTbGoods();
+		tbGoods.setAuditStatus("0");//初始录入时商品状态为0
+		goodsMapper.insert(tbGoods);
+
+		//获取goodsDesc表
+		TbGoodsDesc tbGoodsDesc = goods.getTbGoodsDesc();
+		tbGoodsDesc.setGoodsId(tbGoods.getId());
+		goodsDescMapper.insert(tbGoodsDesc);
+
 	}
 
 	
