@@ -26,6 +26,8 @@
 
 	<script type="text/javascript" src="../js/base.js"></script>
 	<script type="text/javascript" src="../js/service/goodsService.js"></script>
+	<script type="text/javascript" src="../js/service/itemCatService.js"></script>
+	<script type="text/javascript" src="../js/service/typeTemplateService.js"></script>
 	<script type="text/javascript" src="../js/controller/baseController.js"></script>
 	<script type="text/javascript" src="../js/controller/goodsController.js"></script>
       
@@ -33,7 +35,7 @@
     
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="selectItemCatList() ">
 
             <!-- 正文区域 -->
             <section class="content">
@@ -74,17 +76,17 @@
 		                           	  	<table>
 		                           	  		<tr>
 		                           	  			<td>
-		                           	  				<select class="form-control" >														
+		                           	  				<select class="form-control" ng-model="entity.tbGoods.category1Id" ng-options="item.id as item.name for item in itemCat1List">
 		                           	  				</select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select class="form-control select-sm" ></select>
+		                           	  				<select class="form-control select-sm" ng-model="entity.tbGoods.category2Id" ng-options="item.id as item.name for item in itemCat2List"></select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select class="form-control select-sm" ></select>
+		                           	  				<select class="form-control select-sm" ng-model="entity.tbGoods.category3Id" ng-options="item.id as item.name for item in itemCat3List"></select>
 		                              			</td>
 		                              			<td>
-		                           	  				模板ID:19
+		                           	  				模板ID:{{entity.tbGoods.typeTemplateId}}
 		                              			</td>
 		                           	  		</tr>
 		                           	  	</table>
@@ -99,7 +101,7 @@
 		                           
 		                           <div class="col-md-2 title">品牌</div>
 		                           <div class="col-md-10 data">
-		                              <select class="form-control" ></select>
+									   <select class="form-control" ng-model="entity.tbGoods.brandId" ng-options="brand.id as brand.text for brand in brandList"></select>
 		                           </div>
 		 							 
 								   <div class="col-md-2 title">副标题</div>

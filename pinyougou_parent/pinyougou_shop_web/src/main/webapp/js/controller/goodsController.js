@@ -1,5 +1,5 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller   ,goodsService){	
+app.controller('goodsController' ,function($scope,$controller ,typeTemplateService  ,goodsService,itemCatService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -80,5 +80,44 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService){
 			}			
 		);
 	}
-    
+
+	//查询三级联动分类信息
+	$scope.selectItemCatList=function () {
+		itemCatService.findByParentId(0).success(function (response) {
+
+			$scope.itemCat1List=response;
+        })
+    }
+    //监控一级分类下的二级分类
+	//参数一：监控的变量值，参数二：监控变化后，需要的做的事
+	$scope.$watch("entity.tbGoods.category1Id",function (newValue,oldValue) {
+        itemCatService.findByParentId(newValue).success(function (response) {
+            $scope.itemCat2List=response;
+        })
+    })
+    //监控二级分类下的三级分类
+    //参数一：监控的变量值，参数二：监控变化后，需要的做的事
+    $scope.$watch("entity.tbGoods.category2Id",function (newValue,oldValue) {
+        itemCatService.findByParentId(newValue).success(function (response) {
+            $scope.itemCat3List=response;
+           //遗留的问题如何清理
+        })
+    })
+    //监控三级分类下的模板id
+    //参数一：监控的变量值，参数二：监控变化后，需要的做的事
+    $scope.$watch("entity.tbGoods.category3Id",function (newValue,oldValue) {
+        itemCatService.findOne(newValue).success(function (response) {
+            $scope.entity.tbGoods.typeTemplateId=response.typeId;
+            //遗留的问题如何清空三级的标题
+        })
+    })
+    //监控模板下的查询关联数据
+    //参数一：监控的变量值，参数二：监控变化后，需要的做的事
+    $scope.$watch("entity.tbGoods.typeTemplateId",function (newValue,oldValue) {
+        typeTemplateService.findOne(newValue).success(function (response) {
+        	//注意一定要把品牌的json字符串变为json对象
+            $scope.brandList=JSON.parse(response.brandIds);
+
+        })
+    })
 });	
