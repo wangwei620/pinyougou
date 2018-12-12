@@ -1,5 +1,5 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller ,typeTemplateService  ,goodsService,itemCatService){
+app.controller('goodsController' ,function($scope,$controller ,typeTemplateService,uploadService  ,goodsService,itemCatService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -118,6 +118,31 @@ app.controller('goodsController' ,function($scope,$controller ,typeTemplateServi
         	//注意一定要把品牌的json字符串变为json对象
             $scope.brandList=JSON.parse(response.brandIds);
 
+            $scope.entity.tbGoodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems);
         })
     })
+	//上传图片
+	$scope.uploadFile=function () {
+		uploadService.uploadFile().success(function (response) {
+			//如果上传成功获得url
+			if (response.success){
+				//设置文件地址
+				$scope.image_entity.url=response.message;
+			}else{
+				alert(response.message);
+			}
+        }).error(function () {
+			alert("上传发生错误");
+        })
+    }
+	//初始化entity
+	$scope.entity={tbGoods:{},tbGoodsDesc:{itemImages:[],specificationItems:[]},items:[]}
+	//添加上传图片到商品列表中
+	$scope.addImageEntity=function () {
+        $scope.entity.tbGoodsDesc.itemImages.push($scope.image_entity);
+    }
+    //从列表中删除
+    $scope.deleImageEntity=function (index) {
+        $scope.entity.tbGoodsDesc.itemImages.splice(index,1)
+    }
 });	
