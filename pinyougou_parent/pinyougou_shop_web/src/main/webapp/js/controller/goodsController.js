@@ -119,7 +119,12 @@ app.controller('goodsController' ,function($scope,$controller ,typeTemplateServi
             $scope.brandList=JSON.parse(response.brandIds);
 
             $scope.entity.tbGoodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems);
+        });
+        //查询规格的规格列表数据
+        typeTemplateService.findSpecList(newValue).success(function (response) {
+            $scope.specList =response;
         })
+
     })
 	//上传图片
 	$scope.uploadFile=function () {

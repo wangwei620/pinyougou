@@ -28,5 +28,9 @@ app.service('typeTemplateService',function($http){
 	//搜索
 	this.search=function(page,rows,searchEntity){
 		return $http.post('../typeTemplate/search.do?page='+page+"&rows="+rows, searchEntity);
-	}    	
+	}
+	//通过模板表查找规格列表的所有数据
+	this.findSpecList=function (id) {
+        return $http.get('../typeTemplate/findSpecList.do?id='+id);
+    }
 });
