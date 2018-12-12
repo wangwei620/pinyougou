@@ -194,7 +194,7 @@
 			                        </div>
                             	</div>
                             	<p>
-                            	
+                            	{{entity.tbGoodsDesc.specificationItems}}
                             	<div>
                             	
 	                                <div class="row data-type">
@@ -204,7 +204,7 @@
 											<div class="col-md-10 data">
 
 					                            <span ng-repeat="option in spec.options">
-					                            	<input  type="checkbox"  >{{option.optionName}}
+					                            	<input  type="checkbox" ng-click="updateSpecAttribute($event,spec.text,option.optionName)" >{{option.optionName}}
 					                            </span>
 											</div>
 

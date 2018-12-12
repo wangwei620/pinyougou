@@ -51,5 +51,16 @@ app.controller("baseController",function($scope){
 		
 		return value;
 	};
+	//基于数组中对象的值  获取该对象返回
+    //[{"attributeName":"网络","attributeValue":["移动3G","移动4G"]}]
+	$scope.getObjectByKey = function (list,key,value) {
+		for (var i=0;i<list.length;i++){
+			//存在对象时
+			if (list[i][key]==value){
+				return list[i];
+			}
+		}
+		return null;
+    }
 
 });

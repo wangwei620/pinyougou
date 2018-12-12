@@ -150,4 +150,30 @@ app.controller('goodsController' ,function($scope,$controller ,typeTemplateServi
     $scope.deleImageEntity=function (index) {
         $scope.entity.tbGoodsDesc.itemImages.splice(index,1)
     }
+    //组装商品录入勾选的的规格列表属性
+	$scope.updateSpecAttribute=function ($event,specName,specOption) {
+		//判断规格名称是否存在于勾选的列表中
+        var specObject=  $scope.getObjectByKey($scope.entity.tbGoodsDesc.specificationItems,"attributeName",specName);
+		if (specObject!=null){
+			//如果存在
+			//判断是勾选还是取消勾选规格选项
+			if($event.target.checked){
+				//勾选,在原有的规格选项数组中,添加勾选的规格选项名称
+				specObject.attributeValue.push(specOption);
+			}else{
+				//取消勾选,在原有的规格选项数组中移除,取消勾选的规格选项名称
+				var index  = specObject.attributeValue.indexOf(specOption);
+				specObject.attributeValue.splice(index,1);
+				//如果取消规格对应的所有规格选项,则从这个规格列表中移除该规格数据
+				if(specObject.attributeValue.length<=0){
+					var index1  = $scope.entity.tbGoodsDesc.specificationItems.indexOf(specObject);
+					$scope.entity.tbGoodsDesc.specificationItems.splice(index1,1);
+				}
+			}
+
+		}else{
+			//如果不存在
+			$scope.entity.tbGoodsDesc.specificationItems.push({"attributeName":specName,"attributeValue":[specObject]});
+		}
+    }
 });	
