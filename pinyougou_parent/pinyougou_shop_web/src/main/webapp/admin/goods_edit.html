@@ -193,31 +193,33 @@
 			                        	<input type="checkbox" >			                           
 			                        </div>
                             	</div>
-                            	<p>
-                            	{{entity.tbGoodsDesc.specificationItems}}
-                            	<div>
-                            	
-	                                <div class="row data-type">
+								<p>
+									{{entity.itemList}}
+								<div>
 
+									<div class="row data-type">
+										<!--[{"id":27,"text":"网络"},{"id":32,"text":"机身内存"}]-->
+										<!--获取所有的规格-->
 										<div ng-repeat="spec in specList">
 											<div class="col-md-2 title">{{spec.text}}</div>
 											<div class="col-md-10 data">
-
+												<!--编写当前规格下的所有规格选项-->
 					                            <span ng-repeat="option in spec.options">
-					                            	<input  type="checkbox" ng-click="updateSpecAttribute($event,spec.text,option.optionName)" >{{option.optionName}}
+					                            	<input  type="checkbox" ng-click="updateSpecAttribute($event,spec.text,option.optionName);createItemList()" >{{option.optionName}}
 					                            </span>
-											</div>
 
-		                                                                                  
-	                                </div>
+											</div>
+										</div>
+									</div>
 	
 	                                
 	                                <div class="row data-type">
 	                                	 <table class="table table-bordered table-striped table-hover dataTable">
 						                    <thead>
-						                        <tr>					                          
-												    <th class="sorting">屏幕尺寸</th>
-													<th class="sorting">网络制式</th>
+						                        <tr>
+													<!--[{"attributeName":"网络","attributeValue":["移动3G","移动4G"]},
+														{"attributeName":"机身内存","attributeValue":["16G"]}]-->
+												    <th class="sorting" ng-repeat="spec in entity.tbGoodsDesc.specificationItems">{{spec.attributeName}}</th>
 												    <th class="sorting">价格</th>
 												    <th class="sorting">库存</th>
 												    <th class="sorting">是否启用</th>
@@ -225,32 +227,12 @@
 											    </tr>
 								            </thead>
 						                    <tbody>
-						                      <tr>					                           
-										            <td>
-										            	4.0
-										            </td>
-													<td>
-										            	3G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
-											  <tr>					                           
-										            <td>
-										            	4.0
-										            </td>
-													<td>
-										            	4G
+						                      <tr ng-repeat="item in entity.itemList">
+												  <!--
+											entity.itemList=[{"spec":{"网络":"移动3G","机身内存":"16G"},"price":0,"num":99999,"status":1,"isDefault":0},
+												{"spec":{"网络":"移动4G","机身内存":"16G"},"price":0,"num":99999,"status":1,"isDefault":0}]-->
+										            <td ng-repeat="specification in entity.tbGoodsDesc.specificationItems">
+														{{item.spec[specification.attributeName]}}
 										            </td>
 										            <td>
 										           		<input class="form-control"  placeholder="价格">
@@ -265,46 +247,7 @@
 										                <input type="checkbox" >									             	
 										            </td>
 						                      </tr>
-											  <tr>					                           
-													<td>
-										            	5.0
-										            </td>
-													<td>
-										            	3G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
-											  <tr>					                           
-													<td>
-										            	5.0
-										            </td>
-													<td>
-										            	4G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
+
 											  
 						                    </tbody>
 									 	</table>

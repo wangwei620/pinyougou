@@ -53,6 +53,7 @@ app.controller("baseController",function($scope){
 	};
 	//基于数组中对象的值  获取该对象返回
     //[{"attributeName":"网络","attributeValue":["移动3G","移动4G"]}]
+	//list是传入的列表数组   key是attributeName  是根据传入值决定的    value 是对应的值,比如网络
 	$scope.getObjectByKey = function (list,key,value) {
 		for (var i=0;i<list.length;i++){
 			//存在对象时
@@ -60,6 +61,7 @@ app.controller("baseController",function($scope){
 				return list[i];
 			}
 		}
+		//不存在则返回空值
 		return null;
     }
 

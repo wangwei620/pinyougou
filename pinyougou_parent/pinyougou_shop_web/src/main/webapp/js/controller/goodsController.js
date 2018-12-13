@@ -172,8 +172,49 @@ app.controller('goodsController' ,function($scope,$controller ,typeTemplateServi
 			}
 
 		}else{
-			//如果不存在
-			$scope.entity.tbGoodsDesc.specificationItems.push({"attributeName":specName,"attributeValue":[specObject]});
+            //如果不存在
+            $scope.entity.tbGoodsDesc.specificationItems.push({"attributeName":specName,"attributeValue":[specOption]});
 		}
+    }
+    //创建item列表
+    $scope.createItemList=function () {
+        //初始化item对象
+        $scope.entity.itemList=[{spec:{},price:0,num:99999,status:"1",isDefault:"0"}];
+
+        //勾选规格结果集
+        //specList:[{"attributeName":"网络","attributeValue":["移动3G"]},{"attributeName":"机身内存","attributeValue":["16G"]}]
+        var specList =$scope.entity.tbGoodsDesc.specificationItems;
+        //如果规格选项全部取消
+        if(specList.length==0){
+            $scope.entity.itemList=[];
+        }
+
+        for(var i=0;i<specList.length;i++){
+            //动态为列表中对象的spec属性赋值方法，动态生成sku列表 行列方法
+            $scope.entity.itemList=addColumn($scope.entity.itemList,specList[i].attributeName,specList[i].attributeValue);
+        }
+
+    }
+
+    addColumn=function (itemList,specName,specOptions) {
+        var newList=[];
+
+        //动态组装itemList列表中的spec对象数据  参考数据示例：{"机身内存":"16G","网络":"联通3G"}
+        for(var i=0;i<itemList.length;i++){
+            //获取litmList列表对象
+            //{spec:{},price:0,num:99999,status:1,isDefault:0}
+            var item = itemList[i];
+
+            //遍历勾选的规格选项数组
+            for(var j=0;j<specOptions.length;j++){
+                //基于深克隆实现构建item对象操作
+                var newItem = JSON.parse(JSON.stringify(item));
+                newItem.spec[specName]=specOptions[j];
+
+                newList.push(newItem);
+            }
+        }
+        return newList;
+
     }
 });	
