@@ -190,12 +190,12 @@
                             	<div class="row data-type">
 	                            	<div class="col-md-2 title">是否启用规格</div>
 			                        <div class="col-md-10 data">
-			                        	<input type="checkbox" >			                           
+			                        	<input type="checkbox" ng-model="entity.tbGoods.isEnableSpec" ng-true-vaue="1" ng-false-value="0">
 			                        </div>
                             	</div>
 								<p>
-									{{entity.itemList}}
-								<div>
+									<!--通过entity.itemList测试sku数据的动态生成-->
+								<div ng-if="entity.tbGoods.isEnableSpec=='1'">
 
 									<div class="row data-type">
 										<!--[{"id":27,"text":"网络"},{"id":32,"text":"机身内存"}]-->
@@ -235,16 +235,16 @@
 														{{item.spec[specification.attributeName]}}
 										            </td>
 										            <td>
-										           		<input class="form-control"  placeholder="价格">
+										           		<input class="form-control" ng-model="item.price"  placeholder="价格">
 										            </td>
 										            <td>
-										            	<input class="form-control" placeholder="库存数量">
+										            	<input class="form-control" ng-model="item.num" placeholder="库存数量">
 										            </td>
 										            <td>
-										             	<input type="checkbox" >
+										             	<input type="checkbox" ng-model="item.status" >
 										            </td>
 										            <td>
-										                <input type="checkbox" >									             	
+										                <input type="checkbox" ng-model="item.isDefault">
 										            </td>
 						                      </tr>
 
