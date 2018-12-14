@@ -75,5 +75,25 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService){
 			}			
 		);
 	}
-    
+
+    //定义商品状态的数组
+    $scope.status=['未审核','已审核','审核未通过','关闭'];
+
+    //定义查询所有分类的方法
+
+    //注意初始化分类列表
+    $scope.itemCatList=[];
+    $scope.selectItemList=function () {
+        itemCatService.findAll().success(function (response) {
+            /*  ["","手机","电脑" ...]*/
+            //定义记录分类列表的数据
+            for(var i = 0;i<response.length;i++){
+                //分类对象
+                $scope.itemCatList[response[i].id]=response[i].name;
+            }
+        })
+
+    }
+
+
 });	
