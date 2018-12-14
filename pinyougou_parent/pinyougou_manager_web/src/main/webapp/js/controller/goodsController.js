@@ -1,5 +1,5 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller   ,goodsService){	
+app.controller('goodsController' ,function($scope,$controller   ,goodsService,itemCatService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -59,6 +59,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService){
 			function(response){
 				if(response.success){
 					$scope.reloadList();//刷新列表
+                    $scope.selectIds=[];//清空
 				}						
 			}		
 		);				
@@ -94,6 +95,21 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService){
         })
 
     }
+    //批量审核
+    $scope.updateStatus=function(status){
+        //获取选中的复选框
+        goodsService.updateStatus( $scope.selectIds,status ).success(
+            function(response){
+                if(response.success){
+                    $scope.reloadList();//刷新列表
+                    $scope.selectIds=[];//清空记录id的数组
+                }else{
+                    alert(response.message);
+                }
+            }
+        );
+    }
+
 
 
 });	

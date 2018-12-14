@@ -111,5 +111,20 @@ public class GoodsController {
 	public PageResult search(@RequestBody TbGoods goods, int page, int rows  ){
 		return goodsService.findPage(goods, page, rows);		
 	}
+	/**
+	 * 批量审核
+	 * @param ids
+	 * @return
+	 */
+	@RequestMapping("/updateStatus")
+	public Result deleteStatus(Long [] ids,String status){
+		try {
+			goodsService.updateStatus(ids,status);
+			return new Result(true, "审核成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(false, "审核失败");
+		}
+	}
 	
 }

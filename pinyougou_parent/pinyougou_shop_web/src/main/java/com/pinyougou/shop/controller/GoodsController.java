@@ -6,7 +6,6 @@ import com.pinyougou.groupentity.Goods;
 import com.pinyougou.pojo.Result;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.sellergoods.service.GoodsService;
-import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,7 +107,7 @@ public class GoodsController {
 	
 		/**
 	 * 查询+分页
-	 * @param brand
+	 * @param
 	 * @param page
 	 * @param rows
 	 * @return
@@ -120,5 +119,24 @@ public class GoodsController {
 		goods.setSellerId(name);
 		return goodsService.findPage(goods, page, rows);		
 	}
+	/**
+	 * 批量上下架
+	 * @param ids
+	 * @return
+	 */
+	@RequestMapping("/updateIsMarketable")
+	public Result updateIsMarketable(Long [] ids,String isMarketable){
+		try {
+			goodsService.updateIsMarketable(ids,isMarketable);
+			return new Result(true, "上下架成功");
+		}
+		catch (RuntimeException e) {
+			e.printStackTrace();
+			return  new Result(false,e.getMessage());
+		}catch (Exception e){
+			return new Result(false, "上下架失败");
+		}
+	}
+
 	
 }

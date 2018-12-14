@@ -53,7 +53,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public PageResult findPage(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        Page<TbGoods> page = (Page<TbGoods>) goodsMapper.selectByExample(null);
+
+        TbGoodsExample example = new TbGoodsExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteIsNull();
+        Page<TbGoods> page = (Page<TbGoods>) goodsMapper.selectByExample(example);
         return new PageResult(page.getTotal(), page.getResult());
     }
 
@@ -122,7 +126,8 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
     }
-//抽取item工具的方法
+
+    //抽取item工具的方法
     private void setItemValue(TbGoods tbGoods, TbGoodsDesc tbGoodsDesc, TbItem item) {
         //image数据组装
         String itemImages = tbGoodsDesc.getItemImages();
@@ -178,7 +183,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public void delete(Long[] ids) {
         for (Long id : ids) {
-            goodsMapper.deleteByPrimaryKey(id);
+            //先查询出来
+            TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+            tbGoods.setIsDelete("1");
+            //跟新状态id_delete
+            goodsMapper.updateByPrimaryKey(tbGoods);
         }
     }
 
@@ -191,7 +200,7 @@ public class GoodsServiceImpl implements GoodsService {
 
         if (goods != null) {
             if (goods.getSellerId() != null && goods.getSellerId().length() > 0) {
-                criteria.andSellerIdEqualTo(goods.getSellerId() );
+                criteria.andSellerIdEqualTo(goods.getSellerId());
             }
             if (goods.getGoodsName() != null && goods.getGoodsName().length() > 0) {
                 criteria.andGoodsNameLike("%" + goods.getGoodsName() + "%");
@@ -221,4 +230,29 @@ public class GoodsServiceImpl implements GoodsService {
         return new PageResult(page.getTotal(), page.getResult());
     }
 
+    //批量审核
+    @Override
+    public void updateStatus(Long[] ids, String status) {
+        for (Long id : ids) {
+            TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+            tbGoods.setAuditStatus(status);
+            goodsMapper.updateByPrimaryKey(tbGoods);
+        }
+    }
+    //批量上下架
+    @Override
+    public void updateIsMarketable(Long[] ids, String isMarketable) {
+        for (Long id : ids) {
+
+            TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+            //只有审核通过的才能上下架
+            if ("1".equals(tbGoods.getAuditStatus())){
+                tbGoods.setIsMarketable(isMarketable);
+                goodsMapper.updateByPrimaryKey(tbGoods);
+            }else{
+                throw  new RuntimeException("只有审核通过的才能上下架");
+            }
+
+        }
+    }
 }
