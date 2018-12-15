@@ -10,6 +10,7 @@ import com.pinyougou.pojo.TbContent;
 import com.pinyougou.pojo.TbContentExample;
 import com.pinyougou.pojo.TbContentExample.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 
@@ -47,7 +48,9 @@ public class ContentServiceImpl implements ContentService {
 	 */
 	@Override
 	public void add(TbContent content) {
-		contentMapper.insert(content);		
+	    contentMapper.insert(content);
+	    //清除新增广告对应的缓存数据
+        redisTemplate.boundHashOps("content").delete(content.getCategoryId());
 	}
 
 	
@@ -56,7 +59,14 @@ public class ContentServiceImpl implements ContentService {
 	 */
 	@Override
 	public void update(TbContent content){
-		contentMapper.updateByPrimaryKey(content);
+		//修改后我们都要做跟新
+        TbContent tbContent = contentMapper.selectByPrimaryKey(content.getId());
+        redisTemplate.boundHashOps("content").delete(tbContent.getCategoryId());
+        contentMapper.updateByPrimaryKey(content);
+        //判断id是否发生变化,如果分类发生变化,需要清除修改后的缓存数据
+        if (content.getCategoryId().longValue()!=tbContent.getCategoryId().longValue()){
+            redisTemplate.boundHashOps("content").delete(content.getCategoryId());
+        }
 	}	
 	
 	/**
@@ -75,7 +85,10 @@ public class ContentServiceImpl implements ContentService {
 	@Override
 	public void delete(Long[] ids) {
 		for(Long id:ids){
-			contentMapper.deleteByPrimaryKey(id);
+		    //清除删除广告对应的缓存数据
+            TbContent tbContent = contentMapper.selectByPrimaryKey(id);
+            contentMapper.deleteByPrimaryKey(id);
+            redisTemplate.boundHashOps("content").delete(tbContent.getCategoryId());
 		}		
 	}
 	
@@ -106,5 +119,33 @@ public class ContentServiceImpl implements ContentService {
 		Page<TbContent> page= (Page<TbContent>)contentMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	/**
+	 * 通过id查询分类的图片
+	 * @param categoryId
+	 * @return
+	 */
+	@Autowired
+    private RedisTemplate redisTemplate;
+	@Override
+	public List<TbContent> findCategoryId(Long categoryId) {
+	    //1.首先从从redis中查
+        List<TbContent> contentList = (List<TbContent>) redisTemplate.boundHashOps("content").get(categoryId);
+        //2.判断是否有数据
+        if (contentList==null){
+            //如果没有我们从数据中查询
+            TbContentExample example = new TbContentExample();
+            Criteria criteria = example.createCriteria();
+            criteria.andCategoryIdEqualTo(categoryId);
+            criteria.andStatusEqualTo("1");
+             contentList = contentMapper.selectByExample(example);
+            System.out.println("数据库总查的");
+        }else{
+            System.out.println("从redis中查的");
+        }
+
+        return contentList;
+
+	}
+
 }
