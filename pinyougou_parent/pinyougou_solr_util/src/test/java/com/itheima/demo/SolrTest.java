@@ -141,6 +141,4 @@ public class SolrTest {
             System.out.println(item.getId()+" "+item.getTitle()+" "+item.getBrand()+" "+item.getSeller());
         }
     }
-
-
 }
