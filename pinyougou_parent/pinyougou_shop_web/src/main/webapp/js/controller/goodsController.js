@@ -141,7 +141,7 @@ app.controller('goodsController' ,function($scope,$controller ,typeTemplateServi
         })
     }
 	//初始化entity
-	$scope.entity={tbGoods:{isEnableSpec:'1'},tbGoodsDesc:{itemImages:[],specificationItems:[]},items:[]}
+	$scope.entity={tbGoods:{isEnableSpec:'1'},tbGoodsDesc:{itemImages:[],specificationItems:[]},itemList:[]}
 	//添加上传图片到商品列表中
 	$scope.addImageEntity=function () {
         $scope.entity.tbGoodsDesc.itemImages.push($scope.image_entity);

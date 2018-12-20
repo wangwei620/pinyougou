@@ -79,7 +79,7 @@ public class GoodsServiceImpl implements GoodsService {
         if ("1".equals(tbGoods.getIsEnableSpec())) {
             //启用规格
 //组装tb_item表
-            List<TbItem> items = goods.getItems();
+            List<TbItem> items = goods.getItemList();
             for (TbItem item : items) {
 			/*后台组装
 			  `title` varchar(100) NOT NULL COMMENT '商品标题',   // 商品名称（SPU名称）+ 商品规格选项名称 中间以空格隔开
@@ -119,7 +119,7 @@ public class GoodsServiceImpl implements GoodsService {
 			 `is_default` varchar(1) DEFAULT NULL,*/
             item.setSpec("{}");
             item.setPrice(tbGoods.getPrice());
-            item.setNum(9999);
+            item.setNum(99999);
             item.setStatus("1");
             item.setIsDefault("1");
             itemMapper.insert(item);
@@ -140,7 +140,7 @@ public class GoodsServiceImpl implements GoodsService {
             item.setImage(image);
         }
         //三级分类id
-        item.setCategoryid(tbGoods.getCategory1Id());
+        item.setCategoryid(tbGoods.getCategory3Id());
         //时间设置
         item.setCreateTime(new Date());
         item.setUpdateTime(new Date());
