@@ -11,8 +11,14 @@ import com.pinyougou.pojo.*;
 import com.pinyougou.pojo.TbGoodsExample.Criteria;
 import com.pinyougou.sellergoods.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -239,6 +245,14 @@ public class GoodsServiceImpl implements GoodsService {
             goodsMapper.updateByPrimaryKey(tbGoods);
         }
     }
+
+    //activeMQ的创建消息
+    @Autowired
+    private JmsTemplate jmsTemplate;
+    @Autowired
+    private Destination addItemSolrTextDestination;
+    @Autowired
+    private Destination deleItemSolrTextDestination;
     //批量上下架
     @Override
     public void updateIsMarketable(Long[] ids, String isMarketable) {
@@ -247,6 +261,25 @@ public class GoodsServiceImpl implements GoodsService {
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             //只有审核通过的才能上下架
             if ("1".equals(tbGoods.getAuditStatus())){
+
+                //判断是否是上架
+                if("1".equals(isMarketable)){
+                    //同步商品到索引库
+                    jmsTemplate.send(addItemSolrTextDestination, new MessageCreator() {
+                        @Override
+                        public Message createMessage(Session session) throws JMSException {
+                            return session.createTextMessage(id+"");
+                        }
+                    });
+                }else{
+                    //删除商品到索引库;
+                    jmsTemplate.send(deleItemSolrTextDestination, new MessageCreator() {
+                        @Override
+                        public Message createMessage(Session session) throws JMSException {
+                            return session.createTextMessage(id+"");
+                        }
+                    });
+                }
                 tbGoods.setIsMarketable(isMarketable);
                 goodsMapper.updateByPrimaryKey(tbGoods);
             }else{

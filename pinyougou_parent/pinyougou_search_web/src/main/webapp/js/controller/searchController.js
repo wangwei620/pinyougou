@@ -1,4 +1,4 @@
-app.controller("searchController",function ($scope,$controller,searchService) {
+app.controller("searchController",function ($scope,$controller,$location,searchService) {
 
     //控制器继承代码
     $controller("baseController",{$scope:$scope});
@@ -15,6 +15,17 @@ app.controller("searchController",function ($scope,$controller,searchService) {
         pageNo:1,//当前页
         pageSize:60//每页记录数
     };
+
+    //基于$location接受门户网站传过来的搜索关键字,$location.search()  获取的值为Object对象
+   var keywords =  $location.search()["keywords"];
+   //判断是否是空值传过来的,空值的话是"undefined"字符串
+    if (keywords!="undefined"){
+        //输入的搜索的关键字
+        $scope.searchMap.keywords=keywords;
+    }else{
+        //反之没有输入关键字
+        $scope.searchMap.keywords="手机";//给一个默认值作为搜索的关键字
+    }
     //商品搜索
     $scope.search=function () {
         searchService.search($scope.searchMap).success(function (response) {
