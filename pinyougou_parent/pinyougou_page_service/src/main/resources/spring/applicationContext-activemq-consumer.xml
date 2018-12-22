@@ -7,11 +7,7 @@
 		http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/jms
 		http://www.springframework.org/schema/jms/spring-jms.xsd">
-		
-		
-
 	
-	   
     <!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供-->  
 	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">  
 	    <property name="brokerURL" value="tcp://192.168.25.128:61616"/>
@@ -21,31 +17,41 @@
 	<bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
 	<!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->  
 	    <property name="targetConnectionFactory" ref="targetConnectionFactory"/>  
-	</bean>  
-		   
-    <!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->  
-	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">  
-	    <!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 -->  
-	    <property name="connectionFactory" ref="connectionFactory"/>  
-	</bean>      
-    <!--这个是队列目的地，点对点的 上架同步索引库-->
-	<bean id="addItemSolrTextDestination" class="org.apache.activemq.command.ActiveMQQueue">
-	    <constructor-arg value="add_item_solr"/>
 	</bean>
 
-	<!--这个是队列目的地，点对点的 下架删除索引库数据-->
-	<bean id="deleItemSolrTextDestination" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="dele_item_solr"/>
-	</bean>
-	<!--这个是队列目的地，点对点的 上架同步生成静态页面-->
-	<bean id="addItemTextPageDestination" class="org.apache.activemq.command.ActiveMQQueue">
+	<!--这个是队列目的地，点对点的  上架同步生成静态页-->
+	<bean id="addItemPageTextDestination" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg value="add_item_page"/>
 	</bean>
 
-	<!--这个是队列目的地，点对点的 下架删除静态页面-->
+	<!-- 我的监听类 -->
+	<bean id="addItemPageMessageListener" class="com.pinyougou.page.listener.AddItemPageMessageListener"></bean>
+	<!-- 消息监听容器 -->
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<!--监听的activeMQ消息队列连接地址-->
+		<property name="connectionFactory" ref="connectionFactory" />
+		<!--要监听的消息-->
+		<property name="destination" ref="addItemPageTextDestination" />
+		<!--指定监听类完成监听操作-->
+		<property name="messageListener" ref="addItemPageMessageListener" />
+	</bean>
+
+
+	<!--这个是队列目的地，点对点的  下架同步删除静态页面-->
 	<bean id="deleItemPageTextDestination" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg value="dele_item_page"/>
 	</bean>
 
-
+	<!-- 我的监听类 -->
+	<bean id="deleItemPageMessageListener" class="com.pinyougou.page.listener.DeleItemPageMessageListener"></bean>
+	<!-- 消息监听容器 -->
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<!--监听的activeMQ消息队列连接地址-->
+		<property name="connectionFactory" ref="connectionFactory" />
+		<!--要监听的消息-->
+		<property name="destination" ref="deleItemPageTextDestination" />
+		<!--指定监听类完成监听操作-->
+		<property name="messageListener" ref="deleItemPageMessageListener" />
+	</bean>
+	
 </beans>

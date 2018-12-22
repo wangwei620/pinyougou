@@ -253,6 +253,10 @@ public class GoodsServiceImpl implements GoodsService {
     private Destination addItemSolrTextDestination;
     @Autowired
     private Destination deleItemSolrTextDestination;
+    @Autowired
+    private Destination addItemTextPageDestination;
+    @Autowired
+    private Destination deleItemPageTextDestination;
     //批量上下架
     @Override
     public void updateIsMarketable(Long[] ids, String isMarketable) {
@@ -261,11 +265,19 @@ public class GoodsServiceImpl implements GoodsService {
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             //只有审核通过的才能上下架
             if ("1".equals(tbGoods.getAuditStatus())){
-
+                tbGoods.setIsMarketable(isMarketable);
+                goodsMapper.updateByPrimaryKey(tbGoods);
                 //判断是否是上架
                 if("1".equals(isMarketable)){
                     //同步商品到索引库
                     jmsTemplate.send(addItemSolrTextDestination, new MessageCreator() {
+                        @Override
+                        public Message createMessage(Session session) throws JMSException {
+                            return session.createTextMessage(id+"");
+                        }
+                    });
+                    //商家时添加相应的静态页面
+                    jmsTemplate.send(addItemTextPageDestination, new MessageCreator() {
                         @Override
                         public Message createMessage(Session session) throws JMSException {
                             return session.createTextMessage(id+"");
@@ -279,9 +291,14 @@ public class GoodsServiceImpl implements GoodsService {
                             return session.createTextMessage(id+"");
                         }
                     });
+                    //删除相应的静态页面
+                    jmsTemplate.send(deleItemPageTextDestination, new MessageCreator() {
+                        @Override
+                        public Message createMessage(Session session) throws JMSException {
+                            return session.createTextMessage(id+"");
+                        }
+                    });
                 }
-                tbGoods.setIsMarketable(isMarketable);
-                goodsMapper.updateByPrimaryKey(tbGoods);
             }else{
                 throw  new RuntimeException("只有审核通过的才能上下架");
             }
