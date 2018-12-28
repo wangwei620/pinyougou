@@ -70,6 +70,7 @@
     <!-- 认证过滤器 结束 -->
 
 
+
     <!-- 单点登出  开始  -->
     <beans:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>
     <beans:bean id="requestSingleLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">

@@ -29,6 +29,9 @@
 		        {id:${item.id?c},spec:${item.spec}},
             </#list>
         ];
+        //通过插值替换sku的id
+		//获得当前商品的id
+		var itemId=${item.id?c};
 
     </script>
 </head>
@@ -181,7 +184,7 @@
 							<div class="fl">
 								<ul class="btn-choose unstyled">
 									<li>
-										<a href="cart.html" target="_blank" class="sui-btn  btn-danger addshopcar">加入购物车</a>
+										<a ng-click="addItemToCartList()" target="_blank" class="sui-btn  btn-danger addshopcar">加入购物车</a>
 									</li>
 								</ul>
 							</div>

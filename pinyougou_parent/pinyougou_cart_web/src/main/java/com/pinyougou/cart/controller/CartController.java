@@ -7,6 +7,7 @@ import com.pinyougou.pojo.Result;
 import com.pinyougou.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -76,20 +77,23 @@ public class CartController {
      * 添加商品到购物车
      */
     @RequestMapping("/addItemToCartList")
+    @CrossOrigin(origins = "http://item.pinyougou.com",allowCredentials = "true")
     public Result addItemToCartList(Long itemId, Integer num){
         try {
 
             //获取登陆人用户名
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             System.out.println(username);
-            //获取sessionId
-            String sessionId = getSessionId();
+
+
             //1.查询购物车列表
             List<Cart> cartList = findCartList();
+            //2.添加商品到购物车
+            cartList =  cartService.addItemToCartList(cartList,itemId, num);
             if ("anonymousUser".equals(username)){//未登陆
                 System.out.println("saveCartListToRedis by sessionId.....");
-                //2.添加商品到购物车
-                cartList =  cartService.addItemToCartList(cartList,itemId, num);
+                //获取sessionId
+                String sessionId = getSessionId();
                 //3.保存购物车列表到redis中
                 cartService.saveCartListToRedis(sessionId,cartList);
             }else{//已登录
