@@ -7,16 +7,19 @@ import com.pinyougou.entity.PageResult;
 import com.pinyougou.groupentity.Cart;
 import com.pinyougou.mapper.TbOrderItemMapper;
 import com.pinyougou.mapper.TbOrderMapper;
+import com.pinyougou.mapper.TbPayLogMapper;
 import com.pinyougou.order.service.OrderService;
 import com.pinyougou.pojo.TbOrder;
 import com.pinyougou.pojo.TbOrderExample;
 import com.pinyougou.pojo.TbOrderExample.Criteria;
 import com.pinyougou.pojo.TbOrderItem;
+import com.pinyougou.pojo.TbPayLog;
 import com.pinyougou.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +36,8 @@ public class OrderServiceImpl implements OrderService {
     //注入idWorker  id生成器
     @Autowired
     private IdWorker idWorker;
+    @Autowired
+	private TbPayLogMapper payLogMapper;
 	/**
 	 * 查询全部
 	 */
@@ -64,6 +69,10 @@ public class OrderServiceImpl implements OrderService {
         //订单与商家关联，订单数据有很多是来自购物车列表数据
         List<Cart> cartList = (List<Cart>) redisTemplate.boundValueOps(order.getUserId()).get();
         //循环购物车   ,组装订单  ,每个购物车列表就是一个订单
+		//定义支付总金额
+		double totalMoney = 0.00;
+		//创建一个订单集合名称
+		List<String> ids = new ArrayList<>();
         for (Cart cart : cartList) {
             //构建订单对象
             TbOrder tbOrder = new TbOrder();
@@ -77,8 +86,10 @@ public class OrderServiceImpl implements OrderService {
 		 `source_type` varchar(1) COLLATE utf8_bin DEFAULT NULL COMMENT '订单来源：1:app端，2：pc端，3：M端，4：微信端，5：手机qq端',
 		 `seller_id` varchar(100) COLLATE utf8_bin DEFAULT NULL COMMENT '商家ID',  //来着购物车
              */
+
             //订单id的封装
             long orderId = idWorker.nextId();
+            ids.add(orderId+"");
             tbOrder.setOrderId(orderId);
             //订单状态封装
             tbOrder.setStatus("1");
@@ -124,11 +135,38 @@ public class OrderServiceImpl implements OrderService {
                 tbOrderItemMapper.insert(orderItem);
 
             }
+            //支付的总金额
+            totalMoney+=payment;
             //payment  实付金额 我们不是前天传的,我们从后台算的
             tbOrder.setPayment(new BigDecimal(payment));
             //添加到订单表中
              orderMapper.insert(tbOrder);
         }
+		//如果是在线支付则,保存一笔订单
+		if (order.getPaymentType().equals("1")){
+        	//创建payLog对象
+			TbPayLog payLog = new TbPayLog();
+			/*	`out_trade_no` varchar(30) NOT NULL COMMENT '支付订单号',   //分布式存储 idWorker
+		  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+		  `total_fee` bigint(20) DEFAULT NULL COMMENT '支付金额（分）',
+		  `trade_state` varchar(1) DEFAULT NULL COMMENT '交易状态', //未支付状态
+		  `user_id` varchar(50) DEFAULT NULL COMMENT '用户ID',
+		  `order_list` varchar(200) DEFAULT NULL COMMENT '订单编号列表',  //一笔支付可能对应多笔订单  1,2,3
+		  `pay_type` varchar(1) DEFAULT NULL COMMENT '支付类型',  //微信支付*/
+			payLog.setOutTradeNo(idWorker.nextId()+"");
+			payLog.setCreateTime(new Date());
+			payLog.setTotalFee((long)(totalMoney*100));//转化为分
+			payLog.setTradeState("1");
+			payLog.setUserId(order.getUserId());
+			//[1 , 2 , 3]我们通过切割的方式
+			payLog.setOrderList(ids.toString().replace("[","").replace("]","").replace(" ",""));
+			payLog.setPayType("1");
+			//保存
+			payLogMapper.insert(payLog);
+			//将日志保存redis中
+			redisTemplate.boundHashOps("payLog").put(order.getUserId(),payLog);
+
+		}
         //添加完,我们把redis中的购物车数据列表删除
         redisTemplate.boundHashOps("cartList").delete(order.getUserId());
 	}
