@@ -39,4 +39,5 @@
 			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
 		</property>
 	</bean>
+	<bean id="createSeckillOrder" class="com.pinyougou.seckill.service.impl.CreateSeckillOrder"></bean>
 </beans>

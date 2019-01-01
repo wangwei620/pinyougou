@@ -4,8 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.Result;
 import com.pinyougou.pojo.TbSeckillGoods;
 import com.pinyougou.seckill.service.SeckillService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +17,6 @@ public class SeckillController {
 
     @Reference
     private SeckillService seckillService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     /**
      * 从redis中查询所有的要参加秒杀的商品
