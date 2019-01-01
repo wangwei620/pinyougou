@@ -4,6 +4,8 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.Result;
 import com.pinyougou.pojo.TbSeckillGoods;
 import com.pinyougou.seckill.service.SeckillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,8 @@ public class SeckillController {
 
     @Reference
     private SeckillService seckillService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 从redis中查询所有的要参加秒杀的商品
@@ -40,8 +44,10 @@ public class SeckillController {
     @RequestMapping("/saveSeckillOrder")
     public Result saveSeckillOrder(Long seckillGoodsId){
         try {
+
             //基于安全获取登录人信息
             String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
 
             if(userId.equals("anonymousUser")){
                 return  new Result(false,"请下登录，再下单");

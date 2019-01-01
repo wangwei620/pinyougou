@@ -37,6 +37,13 @@ public class SeckillTask {
             redisTemplate.boundHashOps("seckill_goods").put(seckillGoods.getId(),seckillGoods);
             //商品的详情页,我们可以通过商品的id取值,如下就是的
            // List seckill_goods = redisTemplate.boundHashOps("SECKILL_GOODS").values();
+            //通过redis队列实现,一个商品还有多少库存
+            Integer stockCount = seckillGoods.getStockCount();
+            //通过左压栈 的方式实现
+            for(int i = 0;i<stockCount;i++){//存储的数据结构:   [1,1,1,1]
+                //注意:压栈的数据我们,值存储商品id  如果所有的都存入,有点消耗redis的内存
+                redisTemplate.boundListOps("seckill_goods_queue"+seckillGoods.getId()).leftPush(seckillGoods.getId());
+            }
         }
         System.out.println("synchronizeSeckillGoodsToRedis  worker  finished...");
     }

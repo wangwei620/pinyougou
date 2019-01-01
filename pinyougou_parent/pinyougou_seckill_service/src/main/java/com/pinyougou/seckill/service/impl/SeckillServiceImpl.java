@@ -4,21 +4,27 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.mapper.TbSeckillGoodsMapper;
 import com.pinyougou.mapper.TbSeckillOrderMapper;
 import com.pinyougou.pojo.TbSeckillGoods;
-import com.pinyougou.pojo.TbSeckillOrder;
 import com.pinyougou.seckill.service.SeckillService;
 import com.pinyougou.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Service
 @Transactional
 public class SeckillServiceImpl implements SeckillService{
 
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private CreateSeckillOrder createSeckillOrder;
     /**
      * 从redis 中查询所有要参加秒杀的商品
      * @return
@@ -55,47 +61,40 @@ public class SeckillServiceImpl implements SeckillService{
     @Override
     public void saveSeckillOrder(Long seckillGoodsId, String userId) {
 
-        //从缓存中获取秒杀商品
-        TbSeckillGoods seckillGoods=  (TbSeckillGoods) redisTemplate.boundHashOps("seckill_goods").get(seckillGoodsId);
 
-        if(seckillGoods==null || seckillGoods.getStockCount()<=0){
+        //解决同一个人重复抢购的问题
+        Boolean member = redisTemplate.boundSetOps("seckill_goods_" + seckillGoodsId).isMember(userId);
+        if(member){
+            //如果能取到,说明,重复购买了
+            throw new RuntimeException("您已经抢购成功,不能重复购买");
+        }
+        //解决商品超卖的问题
+        //右弹栈
+        Object obj = redisTemplate.boundListOps("seckill_goods_queue" + seckillGoodsId).rightPop();
+        if (obj==null){
             throw new RuntimeException("商品售完");
         }
 
+        //从缓存中获取秒杀商品
+        TbSeckillGoods seckillGoods=  (TbSeckillGoods) redisTemplate.boundHashOps("seckill_goods").get(seckillGoodsId);
 
-        //组装秒杀订单数据
-        TbSeckillOrder seckillOrder = new TbSeckillOrder();
-        /*
-        tb_seckill_order
-	  `id` bigint(20) NOT NULL COMMENT '主键',
-	  `seckill_id` bigint(20) DEFAULT NULL COMMENT '秒杀商品ID',
-	  `money` decimal(10,2) DEFAULT NULL COMMENT '支付金额',
-	  `user_id` varchar(50) DEFAULT NULL COMMENT '用户',
-	  `seller_id` varchar(50) DEFAULT NULL COMMENT '商家',
-	  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-	  `status` varchar(1) DEFAULT NULL COMMENT '状态',
-         */
-        seckillOrder.setId(idWorker.nextId());
-        seckillOrder.setSeckillId(seckillGoodsId);
-        seckillOrder.setMoney(seckillGoods.getCostPrice());
-        seckillOrder.setUserId(userId);
-        seckillOrder.setSellerId(seckillGoods.getSellerId());
-        seckillOrder.setCreateTime(new Date());
-        seckillOrder.setStatus("1");//未支付
-
-        //设置秒杀商品库存减一
-        seckillGoods.setStockCount(seckillGoods.getStockCount()-1);
-        //保存秒杀订单
-        seckillOrderMapper.insert(seckillOrder);
-        if(seckillGoods.getStockCount()<=0){
-            //商品售完，没有库存后，需要更新数据库中秒杀商品库存数据
-            seckillGoodsMapper.updateByPrimaryKey(seckillGoods);
-
-            //清除redis中该商品
-            redisTemplate.boundHashOps("seckill_goods").delete(seckillGoodsId);
+        //排队人数过多提醒操作
+        Long size = redisTemplate.boundValueOps("seckill_goods_paixu").size();
+        if (seckillGoods.getStockCount()+10<size){
+            throw new RuntimeException("当前人数排队过多,请稍后再试");
         }
-        //秒选下单成功后，扣减库存
-        redisTemplate.boundHashOps("seckill_goods").put(seckillGoodsId,seckillGoods);
+        //排队人数优化,提醒  每次都加一操作,到redis中
+        redisTemplate.boundValueOps("seckill_goods_paixu"+seckillGoodsId).increment(1);
 
+        //=========================================================
+
+        //将秒杀下单的任务存到缓存中,然后在订单的缓存中,获得下单任务,执行保存订单操作
+        Map<String,Object> param = new HashMap<>();
+        param.put("seckillGoodsId",seckillGoodsId);
+        param.put("userId",userId);
+        //存入redis中
+        redisTemplate.boundListOps("seckill_order_queue").leftPush(param);
+        //调用线程的方法
+        executor.execute(createSeckillOrder);//里面是接口,但是我们给一个子实现类,也是可以的
     }
 }
