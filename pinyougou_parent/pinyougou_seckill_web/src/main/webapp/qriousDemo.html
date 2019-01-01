@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="js/qrious.min.js"></script>
+<body>
+<img id="qrious">
+</body>
+<script type="text/javascript">
+    var qr = window.qr = new QRious({
+        element: document.getElementById('qrious'),
+        size: 250,
+        value: 'http://www.baidu.com'
+    })
+</script>
+</html>
